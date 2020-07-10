@@ -16,31 +16,22 @@ class Program
 
         Console.WriteLine("Welcome to BlackJack!");
         Console.WriteLine("You have 100 chips.");
-        Console.WriteLine("How much do you want to bet?");
-        string x = Console.ReadLine();
-        int personInput = Convert.ToInt32(x);
+
 
         while (true)
         {
-            while (personInput > totalChips)
+            Console.WriteLine("How much do you want to bet?");
+            string x = Console.ReadLine();
+            int personInput = Convert.ToInt32(x);
+            if (personInput > totalChips || personInput < 0)
             {
-                Console.WriteLine("You can't bet more than the amount you have!");
-                Console.WriteLine("You have " + totalChips + " chips.");
-                Console.WriteLine("How much do you want to bet?");
-                x = Console.ReadLine();
-                personInput = Convert.ToInt32(x);
-                totalChips = 100;
 
-                while (personInput < 0)
-                {
-                    Console.WriteLine("You have to bet more chips");
-                    Console.WriteLine("You have " + totalChips + " chips.");
-                    Console.WriteLine("How much do you want to bet?");
-                    x = Console.ReadLine();
-                    personInput = Convert.ToInt32(x);
-                    totalChips = 100;
-                }
+                Console.WriteLine("Invalid Chip");
+
+                continue;
             }
+
+
             totalChips = totalChips - personInput;
 
             Console.WriteLine("The amount of chips you have now is " + totalChips + ".");
