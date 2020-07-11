@@ -5,34 +5,38 @@ class Program
 
     static void Main(string[] args)
     {
-        Random r = new Random();
-        int playerCard = r.Next(1, 14);
-        int playerCard2 = r.Next(1, 14);
-        int dealerCard = r.Next(1, 14);
-        int dealerCard2 = r.Next(1, 14);
+        Console.WriteLine("Welcome to BlackJack!");
+        Console.WriteLine("You have 100 chips.");
+
         int playerTotal;
         int dealersTotal;
         int totalChips = 100;
 
-        Console.WriteLine("Welcome to BlackJack!");
-        Console.WriteLine("You have 100 chips.");
-
-
         while (true)
         {
+            Random r = new Random();
+            int playerCard = r.Next(1, 14);
+            int playerCard2 = r.Next(1, 14);
+            int dealerCard = r.Next(1, 14);
+            int dealerCard2 = r.Next(1, 14);
+
+            if (totalChips <= 0)
+            {
+                Console.WriteLine("You have no more chips. Ending game.");
+                break;
+            }
             Console.WriteLine("How much do you want to bet?");
             string x = Console.ReadLine();
-            int personInput = Convert.ToInt32(x);
-            if (personInput > totalChips || personInput < 0)
+            int currentBet = Convert.ToInt32(x);
+            if (currentBet > totalChips || currentBet < 0)
             {
 
-                Console.WriteLine("Invalid Chip");
+                Console.WriteLine("Invalid chip amount. Please enter a different amount.");
 
                 continue;
             }
 
-
-            totalChips = totalChips - personInput;
+            totalChips = totalChips - currentBet;
 
             Console.WriteLine("The amount of chips you have now is " + totalChips + ".");
             Console.WriteLine("Your 2 cards are " + NumberToCard(playerCard) + " and a " + NumberToCard(playerCard2));
@@ -43,109 +47,142 @@ class Program
 
             int[] cardCounter = new int[14];
 
-            DoStuff(cardCounter, playerCard);
+
+            // TODO Just worry about chip count for now
+            // DoStuff(cardCounter, playerCard);
 
             while (true)
             {
                 Console.WriteLine("Would you like to 'hit' or 'stand'?");
-                string personInput1 = Console.ReadLine();
+                string hitOrStand = Console.ReadLine();
 
                 Random r2 = new Random();
                 int playerNewCard = r2.Next(1, 14);
 
-                if (personInput1 == "hit")
+                if (hitOrStand == "hit")
                 {
                     Console.WriteLine("Your card is " + NumberToCard(playerNewCard));
                     playerTotal = playerTotal + NumberToValue(playerNewCard);
                     Console.WriteLine("Your new total is " + playerTotal);
+
+                    if (playerTotal > 21)
+                    {
+                        Console.WriteLine("Awww! You went over 21! You lose.");
+                        Console.WriteLine("You now have " + totalChips + " chips.");
+                        Console.WriteLine("--------------------------------------------------------------");
+                        Console.WriteLine(" ");
+                        break;
+                    }
                 }
 
-                if (playerTotal > 21)
-                {
-                    Console.WriteLine("Awww! You went over 21! You lose.");
-                    Console.WriteLine("You now have " + totalChips + " chips.");
-                    Console.WriteLine("How much do you want to bet?");
-                    x = Console.ReadLine();
-                    personInput = Convert.ToInt32(x);
-
-
-                }
-
-                if (personInput1 == "stand")
+                if (hitOrStand == "stand")
                 {
                     Console.WriteLine("Ok, it is now the dealers turn.");
                     Console.WriteLine("The dealer's hidden card was " + NumberToCard(dealerCard2));
+                    Console.WriteLine("The dealer's hand is " + NumberToCard(dealerCard) + " and " + NumberToCard(dealerCard2) + ".");
                     dealersTotal = NumberToValue(dealerCard) + NumberToValue(dealerCard2);
                     Console.WriteLine("The dealer's total is " + dealersTotal);
-
-                    while (dealersTotal < 17)
+                    if (dealersTotal >= 17)
                     {
-                        int dealerNewCard = r2.Next(1, 10);
-
-                        Console.WriteLine("Dealer chooses to hit.");
-                        Console.WriteLine("Dealer draws a " + NumberToCard(dealerNewCard));
-                        dealersTotal = dealersTotal + NumberToValue(dealerNewCard);
-                        Console.WriteLine("The dealer's total is now " + dealersTotal);
-
-                        if (dealersTotal > 21)
-                        {
-                            Console.WriteLine("Ayyy! You won! The dealer went over 21!");
-                            Console.WriteLine("You now have " + totalChips + " chips.");
-                            Console.WriteLine("How much do you want to bet?");
-                            x = Console.ReadLine();
-                            personInput = Convert.ToInt32(x);
-
-
-
-                        }
-
-                        if (dealersTotal >= 17)
-                        {
-                            Console.WriteLine("The dealer has to stand.");
-                        }
-
                         if (playerTotal > dealersTotal)
                         {
-                            totalChips = personInput * 2 + totalChips;
+                            totalChips = currentBet * 2 + totalChips;
+                            Console.WriteLine("Nice! You won!");
+                            Console.WriteLine("You now have " + totalChips + " chips.");
+                            Console.WriteLine("--------------------------------------------------------------");
+                            Console.WriteLine(" ");
+
+                            break;
+                        }
+                        else if (playerTotal == dealersTotal)
+                        {
+                            totalChips = totalChips + currentBet;
+                            Console.WriteLine("Ok, you tied.");
+                            Console.WriteLine("You now have " + totalChips + " chips.");
+                            Console.WriteLine("--------------------------------------------------------------");
+                            Console.WriteLine(" ");
+
+                            break;
                         }
                         else
                         {
-                            totalChips = personInput * 2 - totalChips;
+                           // totalChips = totalChips - (currentBet * 2);
+                            Console.WriteLine("Awww. You Lost");
+                            Console.WriteLine("You now have " + totalChips + " chips.");
+                            Console.WriteLine("--------------------------------------------------------------");
+                            Console.WriteLine(" ");
+
+                            break;
                         }
-
-                    }
-
-                    if (playerTotal > dealersTotal)
-                    {
-
-                        Console.WriteLine("Nice! You won!");
-                        Console.WriteLine("You now have " + totalChips + " chips.");
-                        Console.WriteLine("How much do you want to bet?");
-                        x = Console.ReadLine();
-                        personInput = Convert.ToInt32(x);
-
-
                     }
                     else
                     {
-                        Console.WriteLine("Awww. You Lost");
-                        Console.WriteLine("You now have " + totalChips + " chips.");
-                        Console.WriteLine("How much do you want to bet?");
-                        x = Console.ReadLine();
-                        personInput = Convert.ToInt32(x);
+                        while (dealersTotal < 17)
+                        {
+                            int dealerNewCard = r2.Next(1, 14);
 
+                            Console.WriteLine("Dealer has to hit.");
+                            Console.WriteLine("Dealer draws a " + NumberToCard(dealerNewCard));
+                            dealersTotal = dealersTotal + NumberToValue(dealerNewCard);
+                            Console.WriteLine("The dealer's total is now " + dealersTotal);
+                            if (dealersTotal <17)
+                            {
+                                continue;
+                            }
+                            if (dealersTotal > 21)
+                            {
+                                totalChips = currentBet * 2 + totalChips;
+                                Console.WriteLine("Ayyy! You won! The dealer went over 21!");
+                                Console.WriteLine("You now have " + totalChips + " chips.");
+                                Console.WriteLine("--------------------------------------------------------------");
+                                Console.WriteLine(" ");
 
+                                break;
+                            }
 
+                            if (dealersTotal >= 17)
+                            {
+                                Console.WriteLine("The dealer has to stand.");
+                            }
+
+                            if (playerTotal > dealersTotal)
+                            {
+                                totalChips = currentBet * 2 + totalChips;
+                                Console.WriteLine("Nice! You won!");
+                                Console.WriteLine("You now have " + totalChips + " chips.");
+                                Console.WriteLine("--------------------------------------------------------------");
+                                Console.WriteLine(" ");
+
+                                break;
+                            }
+                            else if (playerTotal == dealersTotal)
+                            {
+                                totalChips = totalChips + currentBet;
+                                Console.WriteLine("Ok, you tied.");
+                                Console.WriteLine("You now have " + totalChips + " chips.");
+                                Console.WriteLine("--------------------------------------------------------------");
+                                Console.WriteLine(" ");
+
+                                break;
+                            }
+                            else
+                            {
+                               // totalChips = totalChips - (currentBet * 2);
+                                Console.WriteLine("Awww. You Lost");
+                                Console.WriteLine("You now have " + totalChips + " chips.");
+                                Console.WriteLine("--------------------------------------------------------------");
+                                Console.WriteLine(" ");
+
+                                break;
+                            }
+                        }
+
+                        break;
                     }
-
-
-
-
 
                 }
             }
         }
-
     }
 
     public static void DoStuff(int[] cardCounter, int playerCard)
